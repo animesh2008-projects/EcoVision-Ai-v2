@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="js/theme.js"></script>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Campus Eco Map - EcoVision AI</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Leaflet Maps CSS & JS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  
+  <style>
+    .map-container {
+      max-width: 1400px;
+      margin: 2rem auto;
+      padding: 0 2rem;
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 1.5rem;
+      height: calc(100vh - 160px);
+    }
+    @media (max-width: 900px) {
+      .map-container {
+        grid-template-columns: 1fr;
+        height: auto;
+      }
+      #map {
+        height: 450px !important;
+      }
+    }
+    #map {
+      height: 100%;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border-light);
+      box-shadow: var(--shadow);
+      z-index: 5;
+    }
+    body.dark-theme #map {
+      border-color: var(--border-dark);
+    }
+    .map-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 0.85rem;
+      margin-bottom: 0.5rem;
+    }
+    .legend-color {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+    }
+    .color-critical { background: #e74c3c; border: 2px solid rgba(255,255,255,0.2); }
+    .color-assigned { background: #f1c40f; border: 2px solid rgba(255,255,255,0.2); }
+    .color-progress { background: #3498db; border: 2px solid rgba(255,255,255,0.2); }
+    .color-resolved { background: #2ecc71; border: 2px solid rgba(255,255,255,0.2); }
+    .color-nature { background: #2ecc71; border: 2px solid rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; color: white; font-size: 0.5rem; }
+
+    /* Custom Leaflet Map Dark filter */
+    body.dark-theme .leaflet-tile-container {
+      filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%);
+    }
+    body.dark-theme .leaflet-container {
+      background: #111;
+    }
+    body.dark-theme .leaflet-bar a,
+    body.dark-theme .leaflet-bar a:hover {
+      background-color: rgba(18, 28, 24, 0.9) !important;
+      color: var(--text-dark-primary) !important;
+      border-color: var(--border-dark) !important;
+    }
+    body.dark-theme .leaflet-control-attribution {
+      background: rgba(18, 28, 24, 0.8) !important;
+      color: var(--text-dark-secondary) !important;
+    }
+    
+    /* Pop-up design overrides */
+    .leaflet-popup-content-wrapper {
+      background: var(--bg-light-card);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
+      color: var(--text-light-primary);
+      box-shadow: var(--shadow);
+    }
+    body.dark-theme .leaflet-popup-content-wrapper {
+      background: var(--bg-dark-card);
+      border: 1px solid var(--border-dark);
+      color: var(--text-dark-primary);
+    }
+    .leaflet-popup-tip {
+      background: var(--bg-light-card);
+    }
+    body.dark-theme .leaflet-popup-tip {
+      background: rgba(18, 28, 24, 0.9);
+    }
+    .leaflet-popup-close-button {
+      color: var(--text-light-secondary) !important;
+    }
+  </style>
+</head>
+<body class="dark-theme">
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+
+  <header class="main-header" role="banner">
+    <div class="nav-container">
+      <div class="logo" onclick="window.location.href='index.html'" style="cursor:pointer;">
+        <img src="assets/logo.png" alt="EcoVision AI Logo">
+        <span>EcoVision AI</span>
+      </div>
+      <ul class="nav-menu" role="navigation" aria-label="Main Navigation">
+        <li><a href="dashboard.html" class="nav-link" id="nav-dash-link">Dashboard</a></li>
+        <li><a href="scanner.html" class="nav-link" id="nav-scan-link">Scan Issue</a></li>
+        <li><a href="reports.html" class="nav-link">Reports</a></li>
+        <li><a href="map.html" class="nav-link active">Campus Map</a></li>
+        <div class="user-profile-menu">
+          <span id="header-user-name">Loading...</span>
+          <span id="header-user-role" class="role-badge">STUDENT</span>
+          <a href="#" id="header-logout-btn" class="nav-link" style="padding:4px 8px;"><i class="fa-solid fa-sign-out"></i></a>
+        </div>
+              <li><button id="theme-toggle-btn" class="theme-toggle-btn"><i class="fa-solid fa-moon"></i></button></li>
+</ul>
+    </div>
+  </header>
+
+  <main id="main-content" role="main" class="map-container">
+    <!-- Sidebar map filtering controls -->
+    <div class="map-sidebar">
+      <div class="glass-card">
+        <h3 style="margin-bottom: 1rem;"><i class="fa-solid fa-filter" style="color:var(--primary);"></i> Map Filters</h3>
+        <div class="form-group">
+          <label for="filter-category">Category</label>
+          <select id="filter-category" onchange="applyMapFilters()">
+            <option value="all">All Anomaly Categories</option>
+            <option value="waste">🗑️ Waste Management</option>
+            <option value="water">💧 Water Conservation</option>
+            <option value="energy">⚡ Energy Efficiency</option>
+            <option value="nature">🌱 Grounds & Nature</option>
+          </select>
+        </div>
+        <div class="form-group" style="margin-bottom:0.5rem;">
+          <label for="filter-status">Operational Status</label>
+          <select id="filter-status" onchange="applyMapFilters()">
+            <option value="all">All Workflows</option>
+            <option value="active">Active Issues (Open, In Progress)</option>
+            <option value="resolved">Resolved Tasks Only</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="glass-card" style="margin-top:auto;">
+        <h3 style="margin-bottom: 1rem;">Map Legend</h3>
+        <div class="legend-item">
+          <div class="legend-color color-critical"></div>
+          <span>Critical Severity (Open)</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color color-assigned"></div>
+          <span>Medium / Assigned / Accepted</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color color-progress"></div>
+          <span>Work In Progress (Active)</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color color-resolved"></div>
+          <span>Resolved & Closed</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Live Map Grid -->
+    <div id="map"></div>
+  </main>
+
+  <footer class="main-footer" role="contentinfo">
+    <div class="footer-container">
+      <p>&copy; 2026 EcoVision AI. Built for the Hackathon.</p>
+    </div>
+  </footer>
+
+  <script type="module" src="js/map.js"></script>
+</body>
+</html>

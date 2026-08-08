@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="js/theme.js"></script>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Staff Dashboard - EcoVision AI</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    .staff-container {
+      max-width: 1400px;
+      margin: 2rem auto;
+      padding: 0 2rem;
+    }
+    .welcome-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+    .notif-badge-container {
+      position: relative;
+      cursor: pointer;
+    }
+    .notif-badge {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      background: var(--accent-red);
+      color: white;
+      border-radius: 50%;
+      width: 18px;
+      height: 18px;
+      font-size: 0.7rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+    }
+    .task-actions {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+    .res-upload-box {
+      border: 2px dashed var(--border-light);
+      padding: 1.5rem;
+      border-radius: var(--radius-sm);
+      text-align: center;
+      cursor: pointer;
+      margin-top: 1rem;
+      transition: var(--transition);
+    }
+    body.dark-theme .res-upload-box {
+      border-color: var(--border-dark);
+    }
+    .res-upload-box:hover {
+      border-color: var(--primary);
+    }
+  </style>
+</head>
+<body class="dark-theme">
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+
+  <header class="main-header" role="banner">
+    <div class="nav-container">
+      <div class="logo" onclick="window.location.href='index.html'" style="cursor:pointer;">
+        <img src="assets/logo.png" alt="EcoVision AI Logo">
+        <span>EcoVision AI</span>
+      </div>
+      <ul class="nav-menu" role="navigation" aria-label="Main Navigation">
+        <li><a href="staff.html" class="nav-link active">My Tasks</a></li>
+        <li><a href="map.html" class="nav-link">Eco Map</a></li>
+        <li class="notif-badge-container" id="notif-bell">
+          <i class="fa-regular fa-bell" style="font-size: 1.2rem;"></i>
+          <span class="notif-badge" id="notif-count" style="display: none;">0</span>
+        </li>
+        <div class="user-profile-menu">
+          <span id="header-user-name">Loading...</span>
+          <span id="header-user-role" class="role-badge">STAFF</span>
+          <a href="#" id="header-logout-btn" class="nav-link" style="padding:4px 8px;"><i class="fa-solid fa-sign-out"></i></a>
+        </div>
+              <li><button id="theme-toggle-btn" class="theme-toggle-btn"><i class="fa-solid fa-moon"></i></button></li>
+</ul>
+    </div>
+  </header>
+
+  <!-- In-app Notifications popover panel -->
+  <div id="notifications-panel" class="notifications-panel glass-card">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border-light);">
+      <h4 style="margin: 0; color: var(--primary);"><i class="fa-regular fa-bell"></i> Notifications</h4>
+      <button onclick="clearNotifs()" style="background: none; border: none; color: var(--text-dark-secondary); font-size: 0.8rem; cursor: pointer;">Mark all read</button>
+    </div>
+    <div id="notif-list-container">
+      <p style="text-align: center; font-size: 0.85rem; padding: 1rem 0; color: var(--text-dark-secondary);">No new notifications.</p>
+    </div>
+  </div>
+
+  <main id="main-content" role="main" class="staff-container">
+    <div class="welcome-header">
+      <div>
+        <h1 style="font-size: 2.2rem;">Operational Tasks</h1>
+        <p style="color: var(--text-dark-secondary);">Department: <span id="staff-dept-name" style="color:var(--primary); font-weight:700;">Loading...</span></p>
+      </div>
+    </div>
+
+    <!-- Quick Stat Cards for Work Load -->
+    <div class="dashboard-grid">
+      <div class="glass-card stat-card">
+        <div class="stat-label">Assigned Tasks</div>
+        <div class="stat-val" id="staff-assigned-count">0</div>
+      </div>
+      <div class="glass-card stat-card critical">
+        <div class="stat-label">Urgent / Critical</div>
+        <div class="stat-val" id="staff-urgent-count">0</div>
+      </div>
+      <div class="glass-card stat-card sla-breach">
+        <div class="stat-label">SLA Breached</div>
+        <div class="stat-val" id="staff-breached-count">0</div>
+      </div>
+      <div class="glass-card stat-card">
+        <div class="stat-label">Completed Tasks</div>
+        <div class="stat-val" id="staff-completed-count" style="color:var(--primary);">0</div>
+      </div>
+    </div>
+
+    <!-- Live Task Queue -->
+    <div class="glass-card">
+      <h2 style="margin-bottom: 1.5rem;"><i class="fa-solid fa-list-check" style="color:var(--primary); margin-right: 0.5rem;"></i> Active Task Queue</h2>
+      
+      <div id="staff-tasks-queue" class="issue-list-container">
+        <!-- Render cards dynamically -->
+        <p style="text-align: center; color: var(--text-dark-secondary); padding: 3rem 0;">Loading assigned departmental work...</p>
+      </div>
+    </div>
+
+    <!-- Task details & resolution upload modal -->
+    <div id="task-modal" class="modal" role="dialog" aria-modal="true">
+      <div class="modal-content" style="max-width: 600px; width: 95%;">
+        <button class="modal-close" onclick="closeTaskModal()">&times;</button>
+        <h2 style="margin-bottom: 0.5rem; color: var(--primary);" id="task-title">Issue EV-1001</h2>
+        <div class="status-badge" id="task-status-badge" style="display:inline-block; margin-bottom:1.5rem;">IN_PROGRESS</div>
+
+        <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem; align-items:center;">
+          <img id="task-before-img" src="" style="width: 140px; aspect-ratio:4/3; object-fit:cover; border-radius:var(--radius-sm);" alt="Before photo">
+          <div>
+            <div class="result-meta-label">Observation</div>
+            <p id="task-description" style="font-size:0.9rem;">Details of the issue.</p>
+            <div class="result-meta-label" style="margin-top:0.5rem;">Location</div>
+            <p id="task-location" style="font-size:0.9rem; font-weight:600;">Canteen</p>
+          </div>
+        </div>
+
+        <div class="glass-card" style="background:rgba(0,0,0,0.03); margin-bottom:1.5rem;" id="task-priority-card">
+          <div class="result-meta-label">Explainable Priority Score</div>
+          <div style="font-weight:700; font-size:1.1rem; color:var(--accent-red);" id="task-priority-text">CRITICAL (94/100)</div>
+          <div class="sla-widget alert" id="task-sla-widget" style="margin-top:0.5rem;">
+            <i class="fa-regular fa-clock"></i>
+            <span id="task-sla-text">04h 12m remaining</span>
+          </div>
+        </div>
+
+        <!-- Interactive states workflow -->
+        <div id="workflow-action-section">
+          <!-- Render buttons dynamically based on state -->
+        </div>
+
+        <!-- Upload After Photo box (Only shown in progress) -->
+        <div id="resolution-upload-section" style="display: none;">
+          <h3 style="margin-top:1.5rem; margin-bottom:0.5rem;">Upload Resolution Proof</h3>
+          <div class="res-upload-box" onclick="triggerResFileInput()">
+            <i class="fa-solid fa-cloud-arrow-up" style="font-size: 2rem; color: var(--primary); margin-bottom: 0.5rem;"></i>
+            <p>Click to capture or select "After" photo</p>
+            <input type="file" id="res-file-input" style="display: none;" accept="image/*" onchange="uploadResolutionPhoto(this)">
+          </div>
+        </div>
+
+        <!-- AI Verification overlay -->
+        <div class="analysis-loader" id="verification-loader" style="border-radius: var(--radius-md);">
+          <div class="pulse-ring">
+            <i class="fa-solid fa-microchip" style="font-size: 2.5rem; color: var(--primary);"></i>
+          </div>
+          <div class="loader-status-text">AI Verification in progress...</div>
+          <div class="loader-step-text">Gemini is comparing Before and After states.</div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="main-footer" role="contentinfo">
+    <div class="footer-container">
+      <p>&copy; 2026 EcoVision AI. Built for the Hackathon.</p>
+    </div>
+  </footer>
+
+  <!-- Include workflow, verification, and database logic scripts -->
+  <script type="module">
+    import auth from './js/auth.js';
+    import db from './js/firebase-config.js';
+    import { setupNotifications } from './js/notifications.js';
+    import { updateTaskQueue, claimTask, startTask, submitResolution } from './js/workflow-engine.js';
+
+    const currentUser = auth.checkPageAccess();
+    if (currentUser) {
+      document.getElementById("staff-dept-name").textContent = currentUser.department;
+      auth.updateHeaderUI();
+      setupNotifications(currentUser.uid);
+      
+      // Bind functions to window so inline onclick handlers work
+      // Local function declarations for scoping safety
+      function closeTaskModal() {
+        document.getElementById("task-modal").classList.remove("active");
+      }
+      window.closeTaskModal = closeTaskModal;
+      
+      window.triggerResFileInput = function() {
+        document.getElementById("res-file-input").click();
+      };
+      
+      window.uploadResolutionPhoto = async function(input) {
+        if (input.files && input.files[0]) {
+          const loader = document.getElementById("verification-loader");
+          loader.classList.add("active");
+          
+          const activeTaskId = document.getElementById("task-title").textContent;
+          try {
+            await submitResolution(activeTaskId, input.files[0]);
+            loader.classList.remove("active");
+            closeTaskModal();
+            updateTaskQueue(currentUser);
+          } catch(e) {
+            showToast("Resolution upload failed: " + e.message, 'error');
+            loader.classList.remove("active");
+          }
+        }
+      };
+
+      window.actionClaim = async function(id) {
+        await claimTask(id, currentUser.uid, currentUser.displayName);
+        closeTaskModal();
+        updateTaskQueue(currentUser);
+      };
+
+      window.actionStart = async function(id) {
+        await startTask(id, currentUser.uid, currentUser.displayName);
+        closeTaskModal();
+        updateTaskQueue(currentUser);
+      };
+
+      // Initial task loading
+      updateTaskQueue(currentUser);
+    }
+  </script>
+</body>
+</html>

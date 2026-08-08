@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="js/theme.js"></script>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reports & Workflows - EcoVision AI</title>
+  <link rel="stylesheet" href="css/style.css?v=1.0.1">
+  <link rel="stylesheet" href="css/dashboard.css?v=1.0.1">
+  <link rel="stylesheet" href="css/responsive.css?v=1.0.1">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    .reports-container {
+      max-width: 1400px;
+      margin: 2rem auto;
+      padding: 0 2rem;
+    }
+    .filter-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .filters-group {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .search-box {
+      position: relative;
+      width: 300px;
+    }
+    .search-box input {
+      width: 100%;
+      padding: 0.5rem 1rem 0.5rem 2.2rem;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-light);
+      background: transparent;
+      color: inherit;
+    }
+    body.dark-theme .search-box input {
+      border-color: var(--border-dark);
+    }
+    .search-box i {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-light-secondary);
+    }
+    body.dark-theme .search-box i {
+      color: var(--text-dark-secondary);
+    }
+    .details-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 2rem;
+    }
+    @media (max-width: 900px) {
+      .details-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    .compare-box {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .compare-img-box {
+      text-align: center;
+    }
+    .compare-img-box img {
+      width: 100%;
+      aspect-ratio: 4/3;
+      object-fit: cover;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-light);
+    }
+    body.dark-theme .compare-img-box img {
+      border-color: var(--border-dark);
+    }
+    .compare-img-label {
+      font-size: 0.8rem;
+      font-weight: 700;
+      margin-top: 0.25rem;
+      text-transform: uppercase;
+    }
+  </style>
+</head>
+<body class="dark-theme">
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+
+  <header class="main-header" role="banner">
+    <div class="nav-container">
+      <div class="logo" onclick="window.location.href='index.html'" style="cursor:pointer;">
+        <img src="assets/logo.png" alt="EcoVision AI Logo">
+        <span>EcoVision AI</span>
+      </div>
+      <ul class="nav-menu" role="navigation" aria-label="Main Navigation">
+        <li><a href="dashboard.html" class="nav-link" id="nav-dash-link">Dashboard</a></li>
+        <li><a href="scanner.html" class="nav-link" id="nav-scan-link">Scan Issue</a></li>
+        <li><a href="reports.html" class="nav-link active">Reports</a></li>
+        <li><a href="map.html" class="nav-link">Campus Map</a></li>
+        <div class="user-profile-menu">
+          <span id="header-user-name">Loading...</span>
+          <span id="header-user-role" class="role-badge">STUDENT</span>
+          <a href="#" id="header-logout-btn" class="nav-link" style="padding:4px 8px;"><i class="fa-solid fa-sign-out"></i></a>
+        </div>
+              <li><button id="theme-toggle-btn" class="theme-toggle-btn"><i class="fa-solid fa-moon"></i></button></li>
+</ul>
+    </div>
+  </header>
+
+  <main id="main-content" role="main" class="reports-container">
+    <div id="list-view">
+      <h1 style="margin-bottom: 1.5rem; font-size: 2.2rem;">Campus Environmental Workflows</h1>
+      
+      <div class="filter-bar">
+        <div class="filters-group">
+          <button class="btn btn-secondary active" onclick="filterCategory('all', this)" style="padding: 0.5rem 1rem;">All</button>
+          <button class="btn btn-secondary" onclick="filterCategory('waste', this)" style="padding: 0.5rem 1rem;">🗑️ Waste</button>
+          <button class="btn btn-secondary" onclick="filterCategory('water', this)" style="padding: 0.5rem 1rem;">💧 Water</button>
+          <button class="btn btn-secondary" onclick="filterCategory('energy', this)" style="padding: 0.5rem 1rem;">⚡ Energy</button>
+          <button class="btn btn-secondary" onclick="filterCategory('nature', this)" style="padding: 0.5rem 1rem;">🌱 Nature</button>
+        </div>
+        <div class="search-box">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="text" id="search-input" placeholder="Search by issue ID, details..." oninput="searchReports()">
+        </div>
+      </div>
+
+      <div id="reports-grid" class="issue-list-container">
+        <!-- Render cards dynamically -->
+        <p style="text-align: center; color: var(--text-dark-secondary); padding: 3rem 0;">Fetching active campus workflows...</p>
+      </div>
+    </div>
+
+    <!-- Detailed Workflow View Modal/Slide-over -->
+    <div id="details-modal" class="modal" role="dialog" aria-modal="true">
+      <div class="modal-content" style="max-width: 1000px; width: 95%;">
+        <button class="modal-close" onclick="closeDetailsModal()">&times;</button>
+        <h2 style="margin-bottom: 1.5rem; color: var(--primary);" id="det-title">Issue EV-1001</h2>
+        
+        <div class="details-grid">
+          <!-- Left Col: Photos, details, AI verification -->
+          <div>
+            <div class="compare-box">
+              <div class="compare-img-box">
+                <img id="det-before-img" src="" alt="Before remediation">
+                <div class="compare-img-label">Before</div>
+              </div>
+              <div class="compare-img-box" id="det-after-img-container">
+                <img id="det-after-img" src="" alt="After remediation">
+                <div class="compare-img-label" style="color:var(--primary);">After (Resolution)</div>
+              </div>
+            </div>
+
+            <div class="glass-card" style="margin-bottom: 1.5rem;">
+              <h3 style="margin-bottom:0.5rem;"><i class="fa-solid fa-align-left" style="color:var(--primary);"></i> Issue Description</h3>
+              <p id="det-description" style="font-size:0.95rem; margin-bottom: 1rem;">Description goes here.</p>
+              
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; font-size:0.85rem;">
+                <div><strong>Category:</strong> <span id="det-category">Waste</span></div>
+                <div><strong>Location:</strong> <span id="det-location">Canteen</span></div>
+                <div><strong>Assigned To:</strong> <span id="det-assigned">Sanitation Staff</span></div>
+                <div><strong>Priority:</strong> <span id="det-priority">HIGH (Score: 82)</span></div>
+              </div>
+            </div>
+
+            <!-- AI Verification results if resolved or in admin review -->
+            <div class="glass-card" id="det-verification-box" style="display: none; border-left: 4px solid var(--primary);">
+              <h3 style="margin-bottom: 0.5rem;"><i class="fa-solid fa-microchip" style="color:var(--primary);"></i> AI Before/After Verification</h3>
+              <p id="det-verify-exp" style="font-size:0.9rem; margin-bottom:0.75rem;">Verification findings...</p>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; font-size:0.8rem; opacity:0.85;">
+                <div><strong>Resolution Score:</strong> <span id="det-verify-score">87%</span></div>
+                <div><strong>Scene match rate:</strong> <span id="det-verify-scene">94%</span></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Col: Timelines, SLA, and Admin overrides -->
+          <div>
+            <!-- SLA widget -->
+            <div id="det-sla-container" style="margin-bottom: 1.5rem;">
+              <div class="sla-widget" id="det-sla-widget">
+                <i class="fa-regular fa-hourglass-half"></i>
+                <span id="det-sla-text">04h 12m remaining</span>
+              </div>
+            </div>
+
+            <!-- Workflow Log timeline -->
+            <div class="glass-card">
+              <h3 style="margin-bottom: 1rem;"><i class="fa-solid fa-timeline" style="color:var(--primary);"></i> Operational Audit Trail</h3>
+              <div class="timeline" id="det-timeline">
+                <!-- Log steps rendered here -->
+              </div>
+            </div>
+
+            <!-- Admin actions override panel (Hidden for student/staff) -->
+            <div class="glass-card" id="admin-actions-panel" style="margin-top: 1.5rem; display: none;">
+              <h3 style="margin-bottom: 1rem; color: var(--accent-red);"><i class="fa-solid fa-user-shield"></i> Administrative Overrides</h3>
+              <div style="display:flex; flex-direction:column; gap:0.5rem;">
+                <div class="form-group" style="margin-bottom:0.5rem;">
+                  <label for="admin-reassign-staff" style="font-size:0.8rem;">Reassign Staff</label>
+                  <select id="admin-reassign-staff" style="padding:0.4rem; font-size:0.85rem;" onchange="adminReassign()"></select>
+                </div>
+                <div style="display:flex; gap:0.5rem;">
+                  <button class="btn btn-primary" onclick="adminForceResolve()" style="flex:1; padding:0.5rem; font-size:0.85rem;">Force Resolve</button>
+                  <button class="btn btn-secondary" onclick="adminReopen()" style="flex:1; padding:0.5rem; font-size:0.85rem; border-color:var(--accent-red); color:var(--accent-red) !important;">Reopen Issue</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="main-footer" role="contentinfo">
+    <div class="footer-container">
+      <p>&copy; 2026 EcoVision AI. Built for the Hackathon.</p>
+    </div>
+  </footer>
+
+  <script type="module" src="js/reports.js?v=1.0.1"></script>
+</body>
+</html>

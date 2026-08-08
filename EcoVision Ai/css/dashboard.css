@@ -1,0 +1,412 @@
+/* css/dashboard.css */
+
+/* Dashboard Layout */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+/* Stat Cards */
+.stat-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  border-left: 4px solid var(--primary);
+}
+
+.stat-val {
+  font-family: var(--font-headings);
+  font-size: 2.5rem;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--primary);
+  margin: 0.5rem 0;
+}
+
+.stat-label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-light-secondary);
+  letter-spacing: 0.05em;
+}
+
+body.dark-theme .stat-label {
+  color: var(--text-dark-secondary);
+}
+
+/* Specific Stat Card Colors */
+.stat-card.critical {
+  border-left-color: var(--accent-red);
+}
+.stat-card.critical .stat-val {
+  color: var(--accent-red);
+}
+
+.stat-card.sla-breach {
+  border-left-color: var(--accent);
+}
+.stat-card.sla-breach .stat-val {
+  color: var(--accent);
+}
+
+/* Circular EcoScore Dial */
+.ecoscore-container {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  background: linear-gradient(135deg, rgba(142, 200, 160, 0.15) 0%, rgba(46, 204, 113, 0.05) 100%);
+  border: 1px solid var(--border-light);
+}
+
+body.dark-theme .ecoscore-container {
+  border-color: var(--border-dark);
+  background: linear-gradient(135deg, rgba(142, 200, 160, 0.05) 0%, rgba(46, 204, 113, 0.01) 100%);
+}
+
+.ecoscore-dial {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: conic-gradient(var(--primary) calc(var(--score) * 1%), rgba(0,0,0,0.05) 0);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: inset 0 0 10px rgba(0,0,0,0.05);
+}
+
+body.dark-theme .ecoscore-dial {
+  background: conic-gradient(var(--primary) calc(var(--score) * 1%), rgba(255,255,255,0.05) 0);
+}
+
+.ecoscore-dial::before {
+  content: '';
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: white;
+}
+
+body.dark-theme .ecoscore-dial::before {
+  background: HSL(150, 24%, 6%);
+}
+
+.ecoscore-val {
+  position: relative;
+  font-family: var(--font-headings);
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: var(--primary);
+  z-index: 2;
+}
+
+.ecoscore-info h3 {
+  font-size: 1.2rem;
+  margin-bottom: 0.25rem;
+}
+
+.ecoscore-info p {
+  font-size: 0.85rem;
+  color: var(--text-light-secondary);
+}
+
+body.dark-theme .ecoscore-info p {
+  color: var(--text-dark-secondary);
+}
+
+/* Primary CTA Scan Block */
+.scan-cta-card {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 3rem 2rem;
+  cursor: pointer;
+  box-shadow: 0 12px 40px rgba(46, 204, 113, 0.25);
+  border: none !important;
+}
+
+.scan-cta-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 16px 50px rgba(46, 204, 113, 0.35);
+}
+
+.scan-cta-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  animation: float 4s ease-in-out infinite;
+}
+
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+.scan-cta-card h2 {
+  font-size: 1.8rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Task & Issue Cards */
+.issue-list-container {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+.issue-card {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+@media (max-width: 600px) {
+  .issue-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .issue-card-img {
+    width: 100% !important;
+    aspect-ratio: 16/9;
+  }
+}
+
+.issue-card-img {
+  width: 140px;
+  height: 105px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  background-color: rgba(0,0,0,0.1);
+}
+
+.issue-card-details {
+  flex: 1;
+}
+
+.issue-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 0.5rem;
+  gap: 1rem;
+}
+
+.issue-id {
+  font-family: var(--font-headings);
+  font-weight: 700;
+  color: var(--primary);
+  font-size: 1.1rem;
+}
+
+.issue-desc {
+  font-size: 0.9rem;
+  color: var(--text-light-secondary);
+  margin-bottom: 0.75rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+body.dark-theme .issue-desc {
+  color: var(--text-dark-secondary);
+}
+
+.issue-footer-meta {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.8rem;
+  color: var(--text-light-secondary);
+  flex-wrap: wrap;
+}
+
+body.dark-theme .issue-footer-meta {
+  color: var(--text-dark-secondary);
+}
+
+.issue-meta-item {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+/* Status Badges */
+.status-badge {
+  padding: 0.2rem 0.6rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.status-open { background: rgba(52, 152, 219, 0.15); color: #3498db; }
+.status-assigned { background: rgba(155, 89, 182, 0.15); color: #9b59b6; }
+.status-accepted { background: rgba(230, 126, 34, 0.15); color: #e67e22; }
+.status-in-progress { background: rgba(241, 196, 15, 0.15); color: #f1c40f; }
+.status-resolution-submitted { background: rgba(26, 188, 156, 0.15); color: #1abc9c; }
+.status-ai-verification { background: rgba(22, 160, 133, 0.15); color: #16a085; }
+.status-resolved { background: rgba(46, 204, 113, 0.15); color: #2ecc71; }
+.status-admin-review, .status-review-required { background: rgba(231, 76, 60, 0.15); color: #e74c3c; }
+.status-reopened { background: rgba(192, 57, 43, 0.15); color: #c0392b; }
+
+/* SLA countdown widget */
+.sla-widget {
+  background: rgba(0,0,0,0.03);
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+body.dark-theme .sla-widget {
+  background: rgba(255,255,255,0.03);
+}
+
+.sla-widget.alert {
+  color: var(--accent-red);
+  background: rgba(231, 76, 60, 0.1);
+  border: 1px solid rgba(231, 76, 60, 0.2);
+}
+
+.sla-widget.breached {
+  color: white;
+  background: var(--accent-red);
+}
+
+/* Timeline Audit Logs */
+.timeline {
+  position: relative;
+  padding-left: 2rem;
+  margin: 1.5rem 0;
+}
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 7px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--border-light);
+}
+
+body.dark-theme .timeline::before {
+  background: var(--border-dark);
+}
+
+.timeline-item {
+  position: relative;
+  margin-bottom: 1.5rem;
+}
+
+.timeline-dot {
+  position: absolute;
+  left: -29px;
+  top: 4px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: white;
+  border: 3px solid var(--primary);
+  z-index: 2;
+}
+
+body.dark-theme .timeline-dot {
+  background: HSL(150, 24%, 6%);
+}
+
+.timeline-time {
+  font-size: 0.75rem;
+  color: var(--text-light-secondary);
+  font-weight: bold;
+}
+
+body.dark-theme .timeline-time {
+  color: var(--text-dark-secondary);
+}
+
+.timeline-content {
+  font-size: 0.9rem;
+}
+
+.timeline-title {
+  font-weight: 700;
+}
+
+.timeline-note {
+  color: var(--text-light-secondary);
+  margin-top: 0.25rem;
+  font-size: 0.85rem;
+}
+
+body.dark-theme .timeline-note {
+  color: var(--text-dark-secondary);
+}
+
+/* Notification Popover/Container */
+.notifications-panel {
+  position: absolute;
+  top: 60px;
+  right: 20px;
+  width: 360px;
+  max-height: 480px;
+  overflow-y: auto;
+  z-index: 150;
+  display: none;
+}
+
+.notifications-panel.active {
+  display: block;
+  animation: slideInDown 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+@keyframes slideInDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.notif-item {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border-light);
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+body.dark-theme .notif-item {
+  border-bottom-color: var(--border-dark);
+}
+
+.notif-item:hover {
+  background: rgba(142, 200, 160, 0.1);
+}
+
+.notif-item.unread {
+  background: rgba(142, 200, 160, 0.05);
+  font-weight: 600;
+  border-left: 3px solid var(--primary);
+}
+
+.notif-time {
+  font-size: 0.7rem;
+  color: var(--text-light-secondary);
+  margin-top: 0.25rem;
+  display: block;
+}
+
+body.dark-theme .notif-time {
+  color: var(--text-dark-secondary);
+}

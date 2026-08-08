@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="js/theme.js"></script>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Dashboard - EcoVision AI</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    .dashboard-container {
+      max-width: 1400px;
+      margin: 2rem auto;
+      padding: 0 2rem;
+    }
+    .welcome-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+    .notif-badge-container {
+      position: relative;
+      cursor: pointer;
+    }
+    .notif-badge {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      background: var(--accent-red);
+      color: white;
+      border-radius: 50%;
+      width: 18px;
+      height: 18px;
+      font-size: 0.7rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+    }
+    .ai-assistant-card {
+      margin-top: 2rem;
+      background: linear-gradient(135deg, rgba(142, 200, 160, 0.1) 0%, rgba(38, 142, 255, 0.05) 100%);
+      border: 1px solid var(--border-light);
+    }
+    body.dark-theme .ai-assistant-card {
+      border-color: var(--border-dark);
+    }
+    .ai-assistant-chat {
+      max-height: 250px;
+      overflow-y: auto;
+      margin-bottom: 1rem;
+      padding: 1rem;
+      border-radius: var(--radius-sm);
+      background: rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    body.dark-theme .ai-assistant-chat {
+      background: rgba(255,255,255,0.02);
+    }
+    .chat-msg {
+      padding: 0.5rem 1rem;
+      border-radius: var(--radius-sm);
+      max-width: 80%;
+      font-size: 0.9rem;
+    }
+    .chat-msg.user {
+      background: var(--primary);
+      color: white;
+      align-self: flex-end;
+    }
+    .chat-msg.bot {
+      background: rgba(255,255,255,0.1);
+      align-self: flex-start;
+    }
+    body.dark-theme .chat-msg.bot {
+      background: rgba(255,255,255,0.05);
+    }
+    .chat-input-row {
+      display: flex;
+      gap: 0.5rem;
+    }
+    .chat-input-row input {
+      flex: 1;
+      padding: 0.5rem 1rem;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-light);
+      background: transparent;
+      color: inherit;
+    }
+    body.dark-theme .chat-input-row input {
+      border-color: var(--border-dark);
+    }
+  </style>
+</head>
+<body class="dark-theme">
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+
+  <header class="main-header" role="banner">
+    <div class="nav-container">
+      <div class="logo" onclick="window.location.href='index.html'" style="cursor:pointer;">
+        <img src="assets/logo.png" alt="EcoVision AI Logo">
+        <span>EcoVision AI</span>
+      </div>
+      <ul class="nav-menu" role="navigation" aria-label="Main Navigation">
+        <li><a href="dashboard.html" class="nav-link active">Dashboard</a></li>
+        <li><a href="scanner.html" class="nav-link">Scan Issue</a></li>
+        <li><a href="reports.html" class="nav-link">My Reports</a></li>
+        <li><a href="map.html" class="nav-link">Campus Map</a></li>
+        <li class="notif-badge-container" id="notif-bell">
+          <i class="fa-regular fa-bell" style="font-size: 1.2rem;"></i>
+          <span class="notif-badge" id="notif-count" style="display: none;">0</span>
+        </li>
+        <div class="user-profile-menu">
+          <span id="header-user-name">Loading...</span>
+          <span id="header-user-role" class="role-badge">STUDENT</span>
+          <a href="#" id="header-logout-btn" class="nav-link" style="padding:4px 8px;"><i class="fa-solid fa-sign-out"></i></a>
+        </div>
+              <li><button id="theme-toggle-btn" class="theme-toggle-btn"><i class="fa-solid fa-moon"></i></button></li>
+</ul>
+    </div>
+  </header>
+
+  <!-- In-app Notifications Popover Panel -->
+  <div id="notifications-panel" class="notifications-panel glass-card">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border-light);">
+      <h4 style="margin: 0; color: var(--primary);"><i class="fa-regular fa-bell"></i> Notifications</h4>
+      <button onclick="clearNotifs()" style="background: none; border: none; color: var(--text-dark-secondary); font-size: 0.8rem; cursor: pointer;">Mark all read</button>
+    </div>
+    <div id="notif-list-container">
+      <p style="text-align: center; font-size: 0.85rem; padding: 1rem 0; color: var(--text-dark-secondary);">No new notifications.</p>
+    </div>
+  </div>
+
+  <main id="main-content" role="main" class="dashboard-container">
+    <div class="welcome-header">
+      <div>
+        <h1 style="font-size: 2.2rem;">Welcome back, <span id="student-name">Student</span> 👋</h1>
+        <p style="color: var(--text-dark-secondary);">Campus Environmental Operation Portal</p>
+      </div>
+      <div>
+        <a href="scanner.html" class="btn btn-primary"><i class="fa-solid fa-camera"></i> SCAN ENVIRONMENT</a>
+      </div>
+    </div>
+
+    <!-- Top statistics dashboard-grid -->
+    <div class="dashboard-grid">
+      <!-- EcoScore Circular Dial Card -->
+      <div class="glass-card ecoscore-container" style="grid-column: span 2;">
+        <div class="ecoscore-dial" id="ecoscore-dial-elem">
+          <span class="ecoscore-val" id="ecoscore-val-elem">78</span>
+        </div>
+        <div class="ecoscore-info">
+          <h3>Campus EcoScore</h3>
+          <p>Operational EcoScore based on response speed, SLA compliance, open critical issues, and greenery observations.</p>
+        </div>
+      </div>
+
+      <!-- Quick stats -->
+      <div class="glass-card stat-card">
+        <div class="stat-label">Reports Submitted</div>
+        <div class="stat-val" id="stat-total-reports">0</div>
+        <p style="font-size: 0.75rem; color: var(--text-dark-secondary);">Total contributions</p>
+      </div>
+
+      <div class="glass-card stat-card">
+        <div class="stat-label">Resolved Issues</div>
+        <div class="stat-val" id="stat-resolved-reports" style="color: var(--primary);">0</div>
+        <p style="font-size: 0.75rem; color: var(--text-dark-secondary);">Remediations complete</p>
+      </div>
+
+      <div class="glass-card stat-card">
+        <div class="stat-label">Active Monitoring</div>
+        <div class="stat-val" id="stat-active-reports" style="color: var(--accent);">0</div>
+        <p style="font-size: 0.75rem; color: var(--text-dark-secondary);">Work in progress</p>
+      </div>
+    </div>
+
+    <!-- Main page content split -->
+    <div class="grid-2col">
+      <!-- Left side: Recent activity list -->
+      <div class="glass-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+          <h2><i class="fa-solid fa-list-check" style="color: var(--primary); margin-right: 0.5rem;"></i> My Environmental Reports</h2>
+          <a href="reports.html" style="font-size: 0.85rem; font-weight: 600;">View All</a>
+        </div>
+        <div id="student-recent-issues" class="issue-list-container">
+          <p style="text-align: center; color: var(--text-dark-secondary); padding: 2rem 0;">No issues reported yet. Click Scan Environment to log an observation.</p>
+        </div>
+      </div>
+
+      <!-- Right side: AI Sustainability Assistant -->
+      <div class="glass-card ai-assistant-card">
+        <h2 style="margin-bottom: 0.5rem;"><i class="fa-solid fa-robot" style="color: var(--primary); margin-right: 0.5rem;"></i> EcoVision AI Assistant</h2>
+        <p style="font-size: 0.85rem; color: var(--text-dark-secondary); margin-bottom: 1.5rem;">Ask questions about campus environmental conditions, hotspots, and active remediation stats.</p>
+        
+        <div class="ai-assistant-chat" id="ai-chat-history">
+          <div class="chat-msg bot">
+            Hello! I am your EcoVision Sustainability Assistant. I can analyze real-time campus data to answer questions about hotspots, active issues, or general sustainability advice. Ask me anything!
+          </div>
+        </div>
+        <form id="ai-chat-form" class="chat-input-row">
+          <input type="text" id="ai-chat-input" placeholder="What are the biggest environmental hotspots on campus?" required autocomplete="off">
+          <button type="submit" class="btn btn-primary" style="padding: 0.5rem 1rem;"><i class="fa-solid fa-paper-plane"></i></button>
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <footer class="main-footer" role="contentinfo">
+    <div class="footer-container">
+      <p>&copy; 2026 EcoVision AI. Built for the Hackathon - See. Decide. Act. Verify.</p>
+    </div>
+  </footer>
+
+  <script type="module">
+    import auth from './js/auth.js';
+    import db from './js/firebase-config.js';
+    import { calculateEcoScore } from './js/analytics.js';
+    import { setupNotifications } from './js/notifications.js';
+
+    // Verify logged-in user and page access
+    const currentUser = auth.checkPageAccess();
+    if (currentUser) {
+      document.getElementById("student-name").textContent = currentUser.displayName;
+      auth.updateHeaderUI();
+      setupNotifications(currentUser.uid);
+      loadDashboardData();
+    }
+
+    async function loadDashboardData() {
+      const issues = await db.getIssues();
+      const studentIssues = issues.filter(i => i.reportedBy === currentUser.uid);
+
+      // Stat cards
+      document.getElementById("stat-total-reports").textContent = studentIssues.length;
+      document.getElementById("stat-resolved-reports").textContent = studentIssues.filter(i => i.status === "RESOLVED").length;
+      document.getElementById("stat-active-reports").textContent = studentIssues.filter(i => i.status !== "RESOLVED").length;
+
+      // Render circular dial EcoScore
+      const campusScoreObj = calculateEcoScore(issues);
+      const score = campusScoreObj.score;
+      const dialElem = document.getElementById("ecoscore-dial-elem");
+      const valElem = document.getElementById("ecoscore-val-elem");
+      if (dialElem && valElem) {
+        valElem.textContent = score;
+        dialElem.style.setProperty("--score", score);
+      }
+
+      // Render recent reports
+      const recentContainer = document.getElementById("student-recent-issues");
+      if (recentContainer && studentIssues.length > 0) {
+        recentContainer.innerHTML = "";
+        
+        // Take top 4 recent
+        const topRecent = studentIssues.slice(0, 4);
+        topRecent.forEach(issue => {
+          const card = document.createElement("div");
+          card.className = "issue-card glass-card";
+          card.style.cursor = "pointer";
+          card.onclick = () => window.location.href = `reports.html?id=${issue.id}`;
+          
+          let severityBadge = `<span class="result-badge badge-${issue.severity.toLowerCase()}">${issue.severity}</span>`;
+          let statusBadge = `<span class="status-badge status-${issue.status.toLowerCase().replace(/_/g, '-')}">${issue.status.replace(/_/g, ' ')}</span>`;
+
+          card.innerHTML = `
+            <img src="${issue.imageUrl || 'https://via.placeholder.com/150'}" class="issue-card-img" alt="Issue photo">
+            <div class="issue-card-details">
+              <div class="issue-card-header">
+                <span class="issue-id">${issue.id}</span>
+                <div style="display:flex;gap:0.5rem;align-items:center;">
+                  ${severityBadge}
+                  ${statusBadge}
+                </div>
+              </div>
+              <p class="issue-desc">${issue.description}</p>
+              <div class="issue-footer-meta">
+                <div class="issue-meta-item"><i class="fa-solid fa-location-dot"></i> ${issue.location.replace(/_/g, ' ')}</div>
+                <div class="issue-meta-item"><i class="fa-regular fa-clock"></i> ${new Date(issue.createdAt).toLocaleDateString()}</div>
+              </div>
+            </div>
+          `;
+          recentContainer.appendChild(card);
+        });
+      }
+    }
+
+    // AI Sustainability Assistant integration
+    const chatForm = document.getElementById("ai-chat-form");
+    const chatInput = document.getElementById("ai-chat-input");
+    const chatHistory = document.getElementById("ai-chat-history");
+
+    chatForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const question = chatInput.value.trim();
+      if (!question) return;
+
+      // Add user message
+      const userMsg = document.createElement("div");
+      userMsg.className = "chat-msg user";
+      userMsg.textContent = question;
+      chatHistory.appendChild(userMsg);
+      chatInput.value = "";
+      chatHistory.scrollTop = chatHistory.scrollHeight;
+
+      // Add bot typing...
+      const typingMsg = document.createElement("div");
+      typingMsg.className = "chat-msg bot";
+      typingMsg.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Analyzing campus operations...`;
+      chatHistory.appendChild(typingMsg);
+      chatHistory.scrollTop = chatHistory.scrollHeight;
+
+      try {
+        const issues = await db.getIssues();
+        const response = await fetch("/.netlify/functions/ai-assistant", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ question, issues })
+        });
+        const result = await response.json();
+        
+        typingMsg.innerHTML = result.answer;
+      } catch (err) {
+        console.error("Assistant API Error:", err);
+        // Local deterministic assistant logic if functions not running
+        let localAnswer = "I'm sorry, I encountered an issue reaching the serverless AI assistant. Here is a local analysis: ";
+        const issues = await db.getIssues();
+        const categoryCounts = issues.reduce((acc, curr) => {
+          acc[curr.category] = (acc[curr.category] || 0) + 1;
+          return acc;
+        }, {});
+        
+        let topCat = "waste";
+        let topVal = 0;
+        for (const [k,v] of Object.entries(categoryCounts)) {
+          if (v > topVal) { topVal = v; topCat = k; }
+        }
+
+        if (question.toLowerCase().includes("hotspot") || question.toLowerCase().includes("location")) {
+          localAnswer += `The locations with the most reports are the Canteen and the Science Lab Block. Canteen has ${issues.filter(i => i.location === "canteen").length} reported issues.`;
+        } else if (question.toLowerCase().includes("most common") || question.toLowerCase().includes("frequent")) {
+          localAnswer += `The most frequent category is '${topCat}' with ${topVal} reports.`;
+        } else {
+          localAnswer += `Currently, there are ${issues.filter(i => i.status !== "RESOLVED").length} open operational issues. Please check our Leaflet Map to view details.`;
+        }
+        typingMsg.textContent = localAnswer;
+      }
+      chatHistory.scrollTop = chatHistory.scrollHeight;
+    });
+  </script>
+</body>
+</html>

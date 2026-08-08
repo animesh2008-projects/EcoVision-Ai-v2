@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="js/theme.js"></script>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EcoVision Scanner - EcoVision AI</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/scanner.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    .result-action-buttons {
+      display: flex;
+      gap: 1rem;
+      margin-top: 2rem;
+      flex-wrap: wrap;
+    }
+  </style>
+</head>
+<body class="dark-theme">
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+
+  <header class="main-header" role="banner">
+    <div class="nav-container">
+      <div class="logo" onclick="window.location.href='index.html'" style="cursor:pointer;">
+        <img src="assets/logo.png" alt="EcoVision AI Logo">
+        <span>EcoVision AI</span>
+      </div>
+      <ul class="nav-menu" role="navigation" aria-label="Main Navigation">
+        <li><a href="dashboard.html" class="nav-link">Dashboard</a></li>
+        <li><a href="scanner.html" class="nav-link active">Scan Issue</a></li>
+        <li><a href="reports.html" class="nav-link">My Reports</a></li>
+        <li><a href="map.html" class="nav-link">Campus Map</a></li>
+              <li><button id="theme-toggle-btn" class="theme-toggle-btn"><i class="fa-solid fa-moon"></i></button></li>
+</ul>
+    </div>
+  </header>
+
+  <main id="main-content" role="main" class="scanner-container">
+    <div id="scan-view">
+      <h1 class="scanner-title">EcoVision Scanner</h1>
+      <p class="scanner-subtitle">Capture or upload an image to identify environmental anomalies on campus</p>
+
+      <div class="viewport-card glass-card">
+        <!-- Live camera stream -->
+        <video id="video-stream" class="camera-stream" autoplay playsinline></video>
+        <!-- Static captured preview -->
+        <img id="capture-preview" class="preview-image" alt="Captured preview">
+        
+        <!-- Standard upload dropzone if camera disabled/unsupported -->
+        <div id="upload-dropzone" class="dropzone" style="display: none;">
+          <i class="fa-solid fa-cloud-arrow-up dropzone-icon"></i>
+          <h3>Drag and drop or click to upload photo</h3>
+          <p style="font-size: 0.8rem; margin-top: 0.5rem;">Supports JPG, PNG (Max 5MB)</p>
+          <input type="file" id="file-input" style="display: none;" accept="image/*">
+        </div>
+
+        <!-- Target viewfinder overlays -->
+        <div class="scanner-overlay" id="scanner-viewfinder">
+          <div class="target-frame">
+            <div class="corner-bracket cb-tl"></div>
+            <div class="corner-bracket cb-tr"></div>
+            <div class="corner-bracket cb-bl"></div>
+            <div class="corner-bracket cb-br"></div>
+            <div class="scan-line"></div>
+          </div>
+        </div>
+
+        <!-- Loading overlay for AI processes -->
+        <div class="analysis-loader" id="analysis-loader">
+          <div class="pulse-ring">
+            <i class="fa-solid fa-leaf" style="font-size: 2.5rem; color: var(--primary);"></i>
+          </div>
+          <div class="loader-status-text" id="loader-status">Initializing Camera...</div>
+          <div class="loader-step-text" id="loader-step">Connecting to live environment feed</div>
+        </div>
+      </div>
+
+      <div class="scanner-controls">
+        <button id="capture-btn" class="btn btn-primary"><i class="fa-solid fa-camera"></i> Capture Photo</button>
+        <button id="upload-btn" class="btn btn-secondary"><i class="fa-solid fa-upload"></i> Upload Image</button>
+        <button id="retake-btn" class="btn btn-secondary" style="display: none;"><i class="fa-solid fa-arrow-rotate-left"></i> Retake</button>
+        <button id="analyze-btn" class="btn btn-primary" style="display: none;"><i class="fa-solid fa-wand-magic-sparkles"></i> Run AI Analysis</button>
+      </div>
+    </div>
+
+    <!-- AI Result & explainable decision screen -->
+    <div id="result-view" class="result-container">
+      <div class="result-header">
+        <h2>AI Environment Analysis</h2>
+        <span class="result-badge" id="res-severity-badge">HIGH</span>
+      </div>
+
+      <div class="grid-2col">
+        <!-- Image & Description column -->
+        <div class="glass-card">
+          <img id="res-image" class="result-photo" src="" alt="Analyzed scene">
+          <div style="margin-top: 1.5rem;">
+            <div class="result-meta-item">
+              <div class="result-meta-label">Observation Details</div>
+              <div class="result-meta-val" id="res-description">Analyzing observation...</div>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+              <div class="result-meta-item">
+                <div class="result-meta-label">Category</div>
+                <div class="result-meta-val" id="res-category">Waste</div>
+              </div>
+              <div class="result-meta-item">
+                <div class="result-meta-label">Subcategory</div>
+                <div class="result-meta-val" id="res-subcategory">Overflowing bin</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Decision Engine breakdown column -->
+        <div class="glass-card">
+          <h3 style="margin-bottom: 1rem; border-bottom: 1px solid var(--border-light); padding-bottom: 0.5rem;"><i class="fa-solid fa-calculator" style="color:var(--primary);"></i> Deterministic Priority Score</h3>
+          
+          <div class="decision-card">
+            <div class="score-display">
+              <span class="score-num" id="res-score">82</span>
+              <span class="score-denom">/100</span>
+            </div>
+            <div class="result-meta-label" style="margin-bottom:1rem;" id="res-priority-label">Priority: HIGH</div>
+
+            <div class="decision-factor-row">
+              <div class="factor-info">
+                <span class="factor-name">Severity Weight (30%)</span>
+                <span class="factor-weight" id="f-severity">22.5 / 30</span>
+              </div>
+              <div class="factor-progress-bg">
+                <div class="factor-progress-fill" id="f-severity-progress" style="width: 75%;"></div>
+              </div>
+            </div>
+            <div class="decision-factor-row">
+              <div class="factor-info">
+                <span class="factor-name">Frequency Modifier (20%)</span>
+                <span class="factor-weight" id="f-frequency">10.0 / 20</span>
+              </div>
+              <div class="factor-progress-bg">
+                <div class="factor-progress-fill" id="f-frequency-progress" style="width: 50%;"></div>
+              </div>
+            </div>
+            <div class="decision-factor-row">
+              <div class="factor-info">
+                <span class="factor-name">Unresolved Queue Modifier (20%)</span>
+                <span class="factor-weight" id="f-unresolved">15.0 / 20</span>
+              </div>
+              <div class="factor-progress-bg">
+                <div class="factor-progress-fill" id="f-unresolved-progress" style="width: 75%;"></div>
+              </div>
+            </div>
+            <div class="decision-factor-row">
+              <div class="factor-info">
+                <span class="factor-name">Location Traffic Impact (15%)</span>
+                <span class="factor-weight" id="f-location">15.0 / 15</span>
+              </div>
+              <div class="factor-progress-bg">
+                <div class="factor-progress-fill" id="f-location-progress" style="width: 100%;"></div>
+              </div>
+            </div>
+            <div class="decision-factor-row">
+              <div class="factor-info">
+                <span class="factor-name">AI Confidence (15%)</span>
+                <span class="factor-weight" id="f-confidence">13.8 / 15</span>
+              </div>
+              <div class="factor-progress-bg">
+                <div class="factor-progress-fill" id="f-confidence-progress" style="width: 92%;"></div>
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-top: 1.5rem;">
+            <h4 style="font-size: 0.9rem; margin-bottom: 0.5rem; text-transform: uppercase; color: var(--text-dark-secondary);">Decision Explanation</h4>
+            <ul class="factor-reason-list" id="res-reasons-list">
+              <li>High-severity category anomaly detected.</li>
+              <li>2 similar reports filed in this area within 7 days.</li>
+              <li>Location (Canteen) identified as high-traffic campus zone.</li>
+            </ul>
+          </div>
+
+          <!-- Auto routing details -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border-light);">
+            <div>
+              <div class="result-meta-label">Assigned Department</div>
+              <div class="result-meta-val" id="res-department" style="color: var(--primary);">Sanitation</div>
+            </div>
+            <div>
+              <div class="result-meta-label">SLA Deadline</div>
+              <div class="result-meta-val" id="res-sla" style="color: var(--accent-red);">6 Hours</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="result-action-buttons">
+        <button id="confirm-workflow-btn" class="btn btn-primary"><i class="fa-solid fa-clipboard-list"></i> CONFIRM & CREATE WORKFLOW</button>
+        <button id="save-observation-btn" class="btn btn-secondary" style="display: none;"><i class="fa-solid fa-floppy-disk"></i> SAVE NATURE OBSERVATION</button>
+        <button id="scan-again-btn" class="btn btn-secondary"><i class="fa-solid fa-arrows-rotate"></i> SCAN AGAIN</button>
+      </div>
+      <p style="font-size: 0.75rem; text-align: center; color: var(--text-dark-secondary); margin-top: 1rem;">
+        *AI-assisted operational routing. Human administrators can override department, staff, or priority score.
+      </p>
+    </div>
+  </main>
+
+  <footer class="main-footer" role="contentinfo">
+    <div class="footer-container">
+      <p>&copy; 2026 EcoVision AI. Built for the Hackathon.</p>
+    </div>
+  </footer>
+
+  <script type="module" src="js/scanner.js"></script>
+</body>
+</html>

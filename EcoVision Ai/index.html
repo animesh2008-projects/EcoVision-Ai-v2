@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="js/theme.js"></script>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EcoVision AI - Intelligent Environmental Workflow Automation</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* Custom landing page styles */
+    .hero-section {
+      padding: 6rem 2rem 4rem;
+      text-align: center;
+      max-width: 1000px;
+      margin: 0 auto;
+      position: relative;
+    }
+    .hero-title {
+      font-size: 3.5rem;
+      font-weight: 800;
+      line-height: 1.1;
+      margin-bottom: 1.5rem;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero-subtitle {
+      font-size: 1.25rem;
+      color: var(--text-light-secondary);
+      margin-bottom: 2.5rem;
+      max-width: 700px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    body.dark-theme .hero-subtitle {
+      color: var(--text-dark-secondary);
+    }
+    .hero-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-bottom: 4rem;
+      flex-wrap: wrap;
+    }
+    .workflow-showcase {
+      padding: 4rem 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .section-title {
+      text-align: center;
+      font-size: 2.2rem;
+      margin-bottom: 3rem;
+      color: var(--primary);
+    }
+    .workflow-steps {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1.5rem;
+      position: relative;
+    }
+    .workflow-step {
+      text-align: center;
+      padding: 1.5rem;
+      position: relative;
+    }
+    .workflow-step-num {
+      width: 40px;
+      height: 40px;
+      background: var(--primary-light);
+      color: var(--primary);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      margin: 0 auto 1rem;
+      font-size: 1.1rem;
+    }
+    body.dark-theme .workflow-step-num {
+      background: rgba(142, 200, 160, 0.1);
+    }
+    .workflow-step i {
+      font-size: 2rem;
+      color: var(--primary);
+      margin-bottom: 1rem;
+    }
+    .workflow-step h3 {
+      font-size: 1.1rem;
+      margin-bottom: 0.5rem;
+    }
+    .workflow-step p {
+      font-size: 0.85rem;
+      color: var(--text-light-secondary);
+    }
+    body.dark-theme .workflow-step p {
+      color: var(--text-dark-secondary);
+    }
+    .usp-box {
+      background: linear-gradient(135deg, rgba(142, 200, 160, 0.1) 0%, rgba(46, 204, 113, 0.03) 100%);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-lg);
+      padding: 3rem 2rem;
+      text-align: center;
+      max-width: 900px;
+      margin: 4rem auto;
+    }
+    body.dark-theme .usp-box {
+      border-color: var(--border-dark);
+    }
+    .usp-text {
+      font-family: var(--font-headings);
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--primary);
+      line-height: 1.4;
+      margin-bottom: 1.5rem;
+    }
+    .demo-selector {
+      max-width: 800px;
+      margin: 2rem auto 4rem;
+      text-align: center;
+    }
+    .demo-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+      margin-top: 1.5rem;
+    }
+    @media (max-width: 768px) {
+      .demo-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    .demo-role-card {
+      cursor: pointer;
+      text-align: center;
+      padding: 2rem 1.5rem;
+      transition: var(--transition);
+    }
+    .demo-role-card i {
+      font-size: 2.5rem;
+      color: var(--primary);
+      margin-bottom: 1rem;
+    }
+    .demo-role-card h3 {
+      margin-bottom: 0.5rem;
+    }
+    .demo-role-card p {
+      font-size: 0.85rem;
+      color: var(--text-light-secondary);
+      margin-bottom: 1rem;
+    }
+    body.dark-theme .demo-role-card p {
+      color: var(--text-dark-secondary);
+    }
+  </style>
+</head>
+<body class="dark-theme">
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+ <!-- Dark theme by default for premium hacker vibe -->
+
+  <header class="main-header" role="banner">
+    <div class="nav-container">
+      <div class="logo">
+        <img src="assets/logo.png" alt="EcoVision AI Logo">
+        <span>EcoVision AI</span>
+      </div>
+      <ul class="nav-menu" role="navigation" aria-label="Main Navigation">
+        <li><a href="index.html" class="nav-link active">Home</a></li>
+        <li><a href="login.html" class="nav-link">Login</a></li>
+        <li><a href="register.html" class="nav-link">Register</a></li>
+              <li><button id="theme-toggle-btn" class="theme-toggle-btn"><i class="fa-solid fa-moon"></i></button></li>
+</ul>
+    </div>
+  </header>
+
+  <main id="main-content" role="main">
+    <section class="hero-section">
+      <h1 class="hero-title">AI-Powered Environmental Operations</h1>
+      <p class="hero-subtitle">See. Decide. Act. Verify. Turn manual, error-prone campus environmental reports into automatically routed tasks, completed by staff, and verified by Gemini AI.</p>
+      
+      <div class="hero-buttons">
+        <a href="login.html" class="btn btn-primary"><i class="fa-solid fa-rocket"></i> Get Started</a>
+        <a href="#quick-demo" class="btn btn-secondary"><i class="fa-solid fa-play"></i> Explore Demo</a>
+      </div>
+    </section>
+
+    <section class="workflow-showcase">
+      <h2 class="section-title">The Automated Lifecycle</h2>
+      <div class="workflow-steps">
+        <div class="workflow-step glass-card">
+          <div class="workflow-step-num">1</div>
+          <i class="fa-solid fa-camera"></i>
+          <h3>Observe</h3>
+          <p>Capture or upload a photo of a waste, water, energy, or grounds issue.</p>
+        </div>
+        <div class="workflow-step glass-card">
+          <div class="workflow-step-num">2</div>
+          <i class="fa-solid fa-brain"></i>
+          <h3>AI Classify</h3>
+          <p>Gemini analyzes the image for category, description, and severity in real-time.</p>
+        </div>
+        <div class="workflow-step glass-card">
+          <div class="workflow-step-num">3</div>
+          <i class="fa-solid fa-gauge-high"></i>
+          <h3>Score & Route</h3>
+          <p>Deterministic rules compute a 0-100 priority score and assign a department.</p>
+        </div>
+        <div class="workflow-step glass-card">
+          <div class="workflow-step-num">4</div>
+          <i class="fa-solid fa-screwdriver-wrench"></i>
+          <h3>Remediate</h3>
+          <p>Staff accepts task, starts work, and uploads an "after" resolution photo.</p>
+        </div>
+        <div class="workflow-step glass-card">
+          <div class="workflow-step-num">5</div>
+          <i class="fa-solid fa-circle-check"></i>
+          <h3>AI Verify</h3>
+          <p>Gemini compares before and after scenes to automatically resolve or review the task.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="usp-box">
+      <div class="usp-text">
+        "EcoVision AI doesn't just detect environmental problems. It converts visual observations into intelligent, automated, and verifiable operations."
+      </div>
+      <p style="color: var(--text-dark-secondary); font-size: 0.95rem;">
+        No WhatsApp chains, no spreadsheet tickets, no manual status tracking. Built with Gemini API, Netlify serverless functions, and Firebase.
+      </p>
+    </section>
+
+    <section id="quick-demo" class="demo-selector">
+      <h2 class="section-title" style="margin-bottom: 1rem;">Instant Demo Access</h2>
+      <p style="color: var(--text-dark-secondary); max-width: 600px; margin: 0 auto 2rem;">
+        Click below to instantly bypass standard login and explore EcoVision AI pre-seeded with 15 realistic campus environmental tasks.
+      </p>
+
+      <div class="demo-grid">
+        <div class="demo-role-card glass-card" onclick="quickLogin('student')">
+          <i class="fa-solid fa-graduation-cap"></i>
+          <h3>Student Portal</h3>
+          <p>Report issues, scan environment, view EcoScore, check map, ask AI Assistant.</p>
+          <span class="btn btn-secondary">Student Mode</span>
+        </div>
+        
+        <div class="demo-role-card glass-card" onclick="quickLogin('staff')">
+          <i class="fa-solid fa-user-gear"></i>
+          <h3>Staff Dashboard</h3>
+          <p>Manage assigned tasks, track SLA countdowns, and upload resolution proof.</p>
+          <span class="btn btn-secondary">Staff Mode</span>
+        </div>
+        
+        <div class="demo-role-card glass-card" onclick="quickLogin('admin')">
+          <i class="fa-solid fa-user-shield"></i>
+          <h3>Admin Center</h3>
+          <p>Manage all issues, bypass AI verification, view hotspots, and track analytics.</p>
+          <span class="btn btn-secondary">Admin Mode</span>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="main-footer" role="contentinfo">
+    <div class="footer-container">
+      <p>&copy; 2026 EcoVision AI. Built for the Hackathon - See. Decide. Act. Verify.</p>
+      <div style="margin-top: 1rem;">
+        <button id="header-dev-settings-btn" class="dev-settings-btn"><i class="fa-solid fa-code"></i> Developer Settings</button>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Dev Settings Modal -->
+  <div id="dev-settings-modal" class="modal" role="dialog" aria-modal="true">
+    <div class="modal-content">
+      <button class="modal-close" onclick="toggleDevModal()">&times;</button>
+      <h2 style="margin-bottom: 1.5rem; color: var(--primary);"><i class="fa-solid fa-gears"></i> Developer Settings</h2>
+      <form id="dev-config-form" onsubmit="saveDevConfig(event)">
+        <div class="form-group">
+          <label for="db-mode">Database Mode</label>
+          <select id="db-mode" onchange="toggleFirebaseInputs()">
+            <option value="mock">Demo Mode (LocalStorage)</option>
+            <option value="firebase">Production Mode (Firebase)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="gemini-api-key">Gemini API Key (Optional Client Fallback)</label>
+          <input type="password" id="gemini-api-key" placeholder="AIzaSy...">
+        </div>
+        <div id="firebase-inputs" style="display: none;">
+          <h4 style="margin: 1rem 0 0.5rem; color: var(--primary);">Firebase Web Configuration</h4>
+          <div class="form-group">
+            <label for="fb-apiKey">API Key</label>
+            <input type="text" id="fb-apiKey">
+          </div>
+          <div class="form-group">
+            <label for="fb-authDomain">Auth Domain</label>
+            <input type="text" id="fb-authDomain">
+          </div>
+          <div class="form-group">
+            <label for="fb-projectId">Project ID</label>
+            <input type="text" id="fb-projectId">
+          </div>
+          <div class="form-group">
+            <label for="fb-storageBucket">Storage Bucket</label>
+            <input type="text" id="fb-storageBucket">
+          </div>
+          <div class="form-group">
+            <label for="fb-messagingSenderId">Messaging Sender ID</label>
+            <input type="text" id="fb-messagingSenderId">
+          </div>
+          <div class="form-group">
+            <label for="fb-appId">App ID</label>
+            <input type="text" id="fb-appId">
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary form-submit-btn">Save Configurations</button>
+      </form>
+    </div>
+  </div>
+
+  <script type="module">
+    import db from './js/firebase-config.js';
+    import auth from './js/auth.js';
+
+    // Set up Dev settings button
+    document.getElementById("header-dev-settings-btn").addEventListener("click", () => {
+      toggleDevModal();
+    });
+
+    // Declare local scoping functions for safety in ES strict mode
+    function toggleFirebaseInputs() {
+      const mode = document.getElementById("db-mode").value;
+      const fbInputs = document.getElementById("firebase-inputs");
+      fbInputs.style.display = mode === "firebase" ? "block" : "none";
+    }
+    window.toggleFirebaseInputs = toggleFirebaseInputs;
+
+     function toggleDevModal() {
+      const modal = document.getElementById("dev-settings-modal");
+      modal.classList.toggle("active");
+      
+      if (modal.classList.contains("active")) {
+        const mode = db.getDbMode();
+        document.getElementById("db-mode").value = mode;
+        toggleFirebaseInputs();
+        
+        // Load Gemini key
+        const geminiKey = localStorage.getItem("ecovision_gemini_api_key") || "";
+        document.getElementById("gemini-api-key").value = geminiKey;
+        
+        if (mode === "firebase") {
+          const config = db.getFirebaseConfig();
+          if (config) {
+            document.getElementById("fb-apiKey").value = config.apiKey || "";
+            document.getElementById("fb-authDomain").value = config.authDomain || "";
+            document.getElementById("fb-projectId").value = config.projectId || "";
+            document.getElementById("fb-storageBucket").value = config.storageBucket || "";
+            document.getElementById("fb-messagingSenderId").value = config.messagingSenderId || "";
+            document.getElementById("fb-appId").value = config.appId || "";
+          }
+        }
+      }
+    }
+    window.toggleDevModal = toggleDevModal;
+
+    function saveDevConfig(e) {
+      e.preventDefault();
+      const mode = document.getElementById("db-mode").value;
+      const geminiKey = document.getElementById("gemini-api-key").value.trim();
+      
+      // Save Gemini key
+      if (geminiKey) {
+        localStorage.setItem("ecovision_gemini_api_key", geminiKey);
+      } else {
+        localStorage.removeItem("ecovision_gemini_api_key");
+      }
+      
+      if (mode === "mock") {
+        db.clearFirebaseConfig();
+        showToast("Switched to Demo Mode (LocalStorage). Page will reload.", 'success');
+        setTimeout(() => window.location.reload(), 1000);
+      } else {
+        const config = {
+          apiKey: document.getElementById("fb-apiKey").value.trim(),
+          authDomain: document.getElementById("fb-authDomain").value.trim(),
+          projectId: document.getElementById("fb-projectId").value.trim(),
+          storageBucket: document.getElementById("fb-storageBucket").value.trim(),
+          messagingSenderId: document.getElementById("fb-messagingSenderId").value.trim(),
+          appId: document.getElementById("fb-appId").value.trim()
+        };
+        
+        if (!config.apiKey || !config.projectId) {
+          showToast("API Key and Project ID are required for Firebase Production mode.", 'error');
+          return;
+        }
+        
+        db.saveFirebaseConfig(config);
+        showToast("Firebase Web Configuration saved successfully! Page will reload in Production Mode.", 'success');
+        setTimeout(() => window.location.reload(), 1000);
+      }
+    }
+    window.saveDevConfig = saveDevConfig;
+
+    window.quickLogin = function(role) {
+      let email = "";
+      if (role === "student") email = "student@campus.edu";
+      else if (role === "staff") email = "sanitation@campus.edu"; // default staff
+      else if (role === "admin") email = "admin@campus.edu";
+
+      auth.login(email, "password123").then(res => {
+        if (!res.success) {
+          showToast(res.error, 'error');
+        }
+      });
+    };
+
+    // Load auth indicators
+    auth.updateHeaderUI();
+  </script>
+</body>
+</html>

@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="js/theme.js"></script>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - EcoVision AI</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    .auth-container {
+      max-width: 450px;
+      margin: 4rem auto;
+      padding: 0 1.5rem;
+    }
+    .auth-card {
+      padding: 2.5rem;
+    }
+    .auth-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .auth-header i {
+      font-size: 2.5rem;
+      color: var(--primary);
+      margin-bottom: 0.5rem;
+    }
+    .auth-header h2 {
+      font-size: 1.8rem;
+    }
+    .auth-header p {
+      color: var(--text-light-secondary);
+      font-size: 0.9rem;
+    }
+    body.dark-theme .auth-header p {
+      color: var(--text-dark-secondary);
+    }
+    .auth-footer {
+      text-align: center;
+      margin-top: 1.5rem;
+      font-size: 0.9rem;
+    }
+    .quick-logins {
+      margin-top: 2rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border-light);
+    }
+    body.dark-theme .quick-logins {
+      border-top-color: var(--border-dark);
+    }
+    .quick-logins-title {
+      text-align: center;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--text-light-secondary);
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+      letter-spacing: 0.05em;
+    }
+    body.dark-theme .quick-logins-title {
+      color: var(--text-dark-secondary);
+    }
+    .quick-login-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.5rem;
+    }
+    .quick-login-btn {
+      padding: 0.5rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body class="dark-theme">
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+
+  <header class="main-header" role="banner">
+    <div class="nav-container">
+      <div class="logo" onclick="window.location.href='index.html'" style="cursor:pointer;">
+        <img src="assets/logo.png" alt="EcoVision AI Logo">
+        <span>EcoVision AI</span>
+      </div>
+      <ul class="nav-menu" role="navigation" aria-label="Main Navigation">
+        <li><a href="index.html" class="nav-link">Home</a></li>
+        <li><a href="login.html" class="nav-link active">Login</a></li>
+        <li><a href="register.html" class="nav-link">Register</a></li>
+              <li><button id="theme-toggle-btn" class="theme-toggle-btn"><i class="fa-solid fa-moon"></i></button></li>
+</ul>
+    </div>
+  </header>
+
+  <main id="main-content" role="main">
+    <div class="auth-container">
+      <div class="auth-card glass-card">
+        <div class="auth-header">
+          <div style="background: rgba(255, 255, 255, 0.95); padding: 0.5rem 1.25rem; border-radius: 50px; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 1.25rem; box-shadow: 0 4px 12px rgba(0,0,0,0.15); gap: 0.5rem;">
+            <img src="assets/logo.png" alt="EcoVision AI Logo" style="height: 35px; object-fit: contain;">
+            <span style="font-weight: 800; font-size: 1.25rem; color: #1a4d2e; font-family: var(--font-headings); letter-spacing: -0.5px; vertical-align: middle;">EcoVision AI</span>
+          </div>
+          <h2>Welcome Back</h2>
+          <p>Login to EcoVision Operations Portal</p>
+        </div>
+
+        <form id="login-form">
+          <div class="form-group">
+            <label for="email">Email Address</label>
+            <input type="email" id="email" required placeholder="name@campus.edu">
+          </div>
+          <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" required placeholder="••••••••">
+          </div>
+          <button type="submit" class="btn btn-primary form-submit-btn">Login</button>
+        </form>
+
+        <div class="quick-logins">
+          <div class="quick-logins-title">Quick Demo Login</div>
+          <div class="quick-login-grid">
+            <button class="btn btn-secondary quick-login-btn" onclick="setQuickLogin('student')">Student</button>
+            <button class="btn btn-secondary quick-login-btn" onclick="setQuickLogin('staff')">Staff</button>
+            <button class="btn btn-secondary quick-login-btn" onclick="setQuickLogin('admin')">Admin</button>
+          </div>
+        </div>
+
+        <div class="auth-footer">
+          Don't have an account? <a href="register.html">Register here</a>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="main-footer" role="contentinfo">
+    <div class="footer-container">
+      <p>&copy; 2026 EcoVision AI. Built for the Hackathon.</p>
+    </div>
+  </footer>
+
+  <script type="module">
+    import auth from './js/auth.js';
+
+    // Guard login page itself
+    auth.checkPageAccess();
+
+    const form = document.getElementById("login-form");
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+
+      const submitBtn = form.querySelector("button[type='submit']");
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Logging in...";
+
+      const res = await auth.login(email, password);
+      if (!res.success) {
+        showToast("Login failed: " + res.error, 'error');
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Login";
+      }
+    });
+
+    window.setQuickLogin = function(role) {
+      if (role === "student") {
+        document.getElementById("email").value = "student@campus.edu";
+        document.getElementById("password").value = "password123";
+      } else if (role === "staff") {
+        document.getElementById("email").value = "sanitation@campus.edu";
+        document.getElementById("password").value = "password123";
+      } else if (role === "admin") {
+        document.getElementById("email").value = "admin@campus.edu";
+        document.getElementById("password").value = "password123";
+      }
+      form.dispatchEvent(new Event('submit'));
+    };
+
+    auth.updateHeaderUI();
+  </script>
+</body>
+</html>

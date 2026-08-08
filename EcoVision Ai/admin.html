@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="js/theme.js"></script>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Command Center - EcoVision AI</title>
+  <link rel="stylesheet" href="css/style.css?v=1.0.1">
+  <link rel="stylesheet" href="css/dashboard.css?v=1.0.1">
+  <link rel="stylesheet" href="css/responsive.css?v=1.0.1">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    .admin-container {
+      max-width: 1400px;
+      margin: 2rem auto;
+      padding: 0 2rem;
+    }
+    .admin-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+    .notif-badge-container {
+      position: relative;
+      cursor: pointer;
+    }
+    .notif-badge {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      background: var(--accent-red);
+      color: white;
+      border-radius: 50%;
+      width: 18px;
+      height: 18px;
+      font-size: 0.7rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+    }
+    .admin-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 2rem;
+      margin-bottom: 2rem;
+    }
+    @media (max-width: 1000px) {
+      .admin-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    .queue-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+      text-align: left;
+    }
+    .queue-table th, .queue-table td {
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border-light);
+    }
+    body.dark-theme .queue-table th, body.dark-theme .queue-table td {
+      border-bottom-color: var(--border-dark);
+    }
+    .queue-table th {
+      font-family: var(--font-headings);
+      font-weight: 700;
+      color: var(--primary);
+    }
+    .queue-table tr:hover {
+      background: rgba(142, 200, 160, 0.05);
+    }
+    .review-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 0;
+      border-bottom: 1px dashed var(--border-light);
+    }
+    body.dark-theme .review-item {
+      border-bottom-color: var(--border-dark);
+    }
+    .review-item:last-child {
+      border: none;
+    }
+  </style>
+</head>
+<body class="dark-theme">
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+
+  <header class="main-header" role="banner">
+    <div class="nav-container">
+      <div class="logo" onclick="window.location.href='index.html'" style="cursor:pointer;">
+        <img src="assets/logo.png" alt="EcoVision AI Logo">
+        <span>EcoVision AI</span>
+      </div>
+      <ul class="nav-menu" role="navigation" aria-label="Main Navigation">
+        <li><a href="admin.html" class="nav-link active">Overview</a></li>
+        <li><a href="reports.html" class="nav-link">Reports</a></li>
+        <li><a href="map.html" class="nav-link">Campus Map</a></li>
+        <li><a href="analytics.html" class="nav-link">Analytics</a></li>
+        <li class="notif-badge-container" id="notif-bell">
+          <i class="fa-regular fa-bell" style="font-size: 1.2rem;"></i>
+          <span class="notif-badge" id="notif-count" style="display: none;">0</span>
+        </li>
+        <div class="user-profile-menu">
+          <span id="header-user-name">Loading...</span>
+          <span id="header-user-role" class="role-badge">ADMIN</span>
+          <a href="#" id="header-logout-btn" class="nav-link" style="padding:4px 8px;"><i class="fa-solid fa-sign-out"></i></a>
+        </div>
+              <li><button id="theme-toggle-btn" class="theme-toggle-btn"><i class="fa-solid fa-moon"></i></button></li>
+</ul>
+    </div>
+  </header>
+
+  <!-- In-app Notifications popover panel -->
+  <div id="notifications-panel" class="notifications-panel glass-card">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border-light);">
+      <h4 style="margin: 0; color: var(--primary);"><i class="fa-regular fa-bell"></i> Notifications</h4>
+      <button onclick="clearNotifs()" style="background: none; border: none; color: var(--text-dark-secondary); font-size: 0.8rem; cursor: pointer;">Mark all read</button>
+    </div>
+    <div id="notif-list-container">
+      <p style="text-align: center; font-size: 0.85rem; padding: 1rem 0; color: var(--text-dark-secondary);">No new notifications.</p>
+    </div>
+  </div>
+
+  <main id="main-content" role="main" class="admin-container">
+    <div class="admin-header">
+      <div>
+        <h1 style="font-size: 2.2rem;">Admin Command Center</h1>
+        <p style="color: var(--text-dark-secondary);">Total Campus Infrastructure & Environmental Control</p>
+      </div>
+      <div>
+        <button onclick="triggerDemoScenarioModal()" class="btn btn-secondary" style="border-style:dashed;"><i class="fa-solid fa-vial"></i> Demo Scenarios</button>
+      </div>
+    </div>
+
+    <!-- Administrative Statistics Dashboard -->
+    <div class="dashboard-grid">
+      <div class="glass-card stat-card">
+        <div class="stat-label">Total Active Issues</div>
+        <div class="stat-val" id="adm-active-count">0</div>
+      </div>
+      <div class="glass-card stat-card critical">
+        <div class="stat-label">Critical Priority</div>
+        <div class="stat-val" id="adm-critical-count">0</div>
+      </div>
+      <div class="glass-card stat-card sla-breach">
+        <div class="stat-label">SLA Breached</div>
+        <div class="stat-val" id="adm-breached-count">0</div>
+      </div>
+      <div class="glass-card stat-card">
+        <div class="stat-label">Awaiting review</div>
+        <div class="stat-val" id="adm-review-count" style="color:var(--accent);">0</div>
+      </div>
+    </div>
+
+    <!-- Main splits: priority queues & review pipelines -->
+    <div class="admin-grid">
+      <!-- Priority Queue table (Left) -->
+      <div class="glass-card" style="overflow-x: auto;">
+        <h2 style="margin-bottom: 1.5rem;"><i class="fa-solid fa-arrow-down-9-1" style="color:var(--primary); margin-right: 0.5rem;"></i> High Priority Queue</h2>
+        <table class="queue-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Category</th>
+              <th>Location</th>
+              <th>Score</th>
+              <th>Priority</th>
+              <th>Status</th>
+              <th>SLA</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="admin-priority-table-body">
+            <tr>
+              <td colspan="8" style="text-align: center; color: var(--text-dark-secondary); padding: 3rem 0;">Compiling active SLA priority queue...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Review Queue & hotspot quick analysis (Right) -->
+      <div style="display:flex; flex-direction:column; gap:2rem;">
+        <!-- Review queue (Failed verification) -->
+        <div class="glass-card">
+          <h2 style="margin-bottom: 1rem;"><i class="fa-solid fa-triangle-exclamation" style="color:var(--accent);"></i> Awaiting Verification</h2>
+          <div id="admin-review-queue-list">
+            <p style="color: var(--text-dark-secondary); font-size: 0.9rem; text-align: center; padding: 2rem 0;">No unresolved AI verifications.</p>
+          </div>
+        </div>
+
+        <!-- Hotspot Quick summary -->
+        <div class="glass-card">
+          <h2 style="margin-bottom: 1rem;"><i class="fa-solid fa-fire" style="color:var(--accent-red);"></i> Campus Hotspots</h2>
+          <div id="admin-hotspots-list" style="display:flex; flex-direction:column; gap:0.75rem;">
+            <!-- Hotspots compiled dynamically -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Demo Scenarios Modal Dialog -->
+  <div id="demo-scenario-modal" class="modal" role="dialog" aria-modal="true">
+    <div class="modal-content" style="max-width: 500px;">
+      <button class="modal-close" onclick="closeDemoScenarioModal()">&times;</button>
+      <h2 style="margin-bottom: 1rem; color: var(--primary);"><i class="fa-solid fa-vial"></i> Trigger Demo Scenarios</h2>
+      <p style="font-size: 0.85rem; color: var(--text-dark-secondary); margin-bottom: 1.5rem;">Select an option below to simulate predefined hackathon demonstration scripts instantly.</p>
+      
+      <div style="display:flex; flex-direction:column; gap:0.75rem;">
+        <button class="btn btn-secondary" onclick="runScenario('waste_report')" style="justify-content: flex-start;"><i class="fa-solid fa-trash-can"></i> Scenario A: Waste scanner detection (92%)</button>
+        <button class="btn btn-secondary" onclick="runScenario('water_leak')" style="justify-content: flex-start;"><i class="fa-solid fa-faucet-drip"></i> Scenario B: Water leakage critical routing</button>
+        <button class="btn btn-secondary" onclick="runScenario('sla_breach')" style="justify-content: flex-start;"><i class="fa-solid fa-hourglass-end"></i> Scenario C: SLA countdown & escalation trigger</button>
+        <button class="btn btn-secondary" onclick="runScenario('failed_verification')" style="justify-content: flex-start;"><i class="fa-solid fa-circle-xmark"></i> Scenario D: Failed verification / Admin review</button>
+      </div>
+    </div>
+  </div>
+
+  <footer class="main-footer" role="contentinfo">
+    <div class="footer-container">
+      <p>&copy; 2026 EcoVision AI. Built for the Hackathon.</p>
+    </div>
+  </footer>
+
+  <script type="module" src="js/admin.js?v=1.0.1"></script>
+</body>
+</html>
